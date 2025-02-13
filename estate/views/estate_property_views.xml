@@ -24,6 +24,10 @@
         <field name="model">estate.property</field>
         <field name="arch" type="xml">
             <form string="Properties">
+                <header>
+                    <button name="action_sold" type="object" string="Sold"/>
+                    <button name ="action_cancel" type="object" string="Cancel"/>
+                </header>
                 <sheet>
                     <group>
                         <h1>
@@ -37,6 +41,7 @@
                     </group>
                     <group>
                         <group>
+                            <field name="state"/>
                             <field name="postcode"/>
                             <field name="date_availability"/>
                         </group>
@@ -71,6 +76,10 @@
                                     <field name="partner_id"/>
                                     <field name="validity"/>
                                     <field name="date_deadline"/>
+                                    <!-- Nút Accept -->
+                                    <button name="action_accept" type="object" title='accept' icon="fa-check"/>
+                                    <!-- Nút Refuse -->
+                                    <button name="action_refuse" type="object" title='refuse' icon="fa-times"/>
                                     <field name="status"/>
                                 </list>
                             </field>
@@ -100,7 +109,7 @@
                 <field name="expected_price"/>
                 <field name="facades"/>
                 <field name="property_type_id"/>
-                
+
                 <!-- Bộ lọc (Filters) -->
                 <filter name="available" string="Available" domain="[('state', 'in', ['new', 'offer_received'])]"/>
 
