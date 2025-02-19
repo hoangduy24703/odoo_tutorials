@@ -6,6 +6,7 @@ from odoo.tools.float_utils import float_compare, float_is_zero
 class EstateProperty (models.Model):
     _name = "estate.property"
     _description =  "test model in traning"
+    _order = "id desc"
 
     name = fields.Char(string="Title", required=True)
     description = fields.Text(string="Description")
@@ -38,7 +39,7 @@ class EstateProperty (models.Model):
     ('offer_accepted', 'Offer Accepted'),
     ('sold', 'Sold'),
     ('cancelled', 'Cancelled')
-    ], string="State", required=True, default='new', copy=False)
+    ], string="State", required=True, default='new', copy=False, compute = "_compute_state", store = True)
 
     property_type_id = fields.Many2one('estate.property.type', string="Property Type")
 
@@ -62,6 +63,8 @@ class EstateProperty (models.Model):
 
     best_price = fields.Float(string = "Best offer", compute = "_highest_price", store=True)
 
+    color = fields.Integer(string="Color")
+
     @api.depends("living_area", "garden_area")
     def _compute_total(self):
         for record in self:
@@ -71,6 +74,14 @@ class EstateProperty (models.Model):
     def _highest_price(self):
         for record in self:
             record.best_price = max(record.offer_ids.mapped("price"), default=0.0)
+
+    @api.depends("offer_ids")
+    def _compute_state(self):
+        for record in self:
+            if record.state in ["new", "offer_received"] and record.offer_ids:
+                record.state = "offer_received"
+            elif not record.offer_ids and record.state not in["sold","cancelled"]:
+                record.state = "new"
 
     @api.onchange('garden')
     def _onchange_garden(self):
@@ -86,6 +97,7 @@ class EstateProperty (models.Model):
             if record.state == 'cancelled':
                 raise UserError("A cancelled property cannot be set as sold.")
             record.state = 'sold'
+            record.offer_ids.status = 'accepted'
 
     def action_cancel(self):
         for record in self:
@@ -110,3 +122,13 @@ class EstateProperty (models.Model):
                 raise ValidationError(
                     "Selling price cannot be lower than 90% of the expected price."
                 )
+
+
+    @api.ondelete(at_uninstall=False)
+    def _prevent_delete(self):
+        for record in self:
+            if record.state not in ['new', 'cancelled']:
+                raise UserError("Cannot delete a property unless its state is 'new' or 'cancelled'.")
+
+
+

@@ -2,22 +2,22 @@
 <odoo>
     <!-- Cấp menu cha -->
     <menuitem id="estate_menu_root" name="Real Estate">
-        
+
         <!-- Menu con cấp 1 -->
         <menuitem id="estate_menu_advertisement" name="Advertisement">
-            
+
             <!-- Menu con cấp 2 - Gắn vào action -->
             <menuitem id="estate_menu_properties" name="Properties" action="action_estate_property"/>
         </menuitem>
-        
+
         <!-- Menu con cấp 1 -->
         <menuitem id="estate_menu_setting" name="Settings">
-            
+
             <!-- Menu con cấp 2 - Gắn vào action -->
             <menuitem id="estate_menu_property_types" name="Property types" action="action_estate_property_type"/>
 
             <menuitem id="estate_menu_property_tags" name="Property Tags" action="action_estate_property_tag"/>
         </menuitem>
-    
+
     </menuitem>
 </odoo>
